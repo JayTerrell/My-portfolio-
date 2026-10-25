@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Not found">
+  <section class="container nf">
+    <span class="eyebrow">Error 404</span>
+    <h1 class="display h1">This dot does not <em>connect.</em></h1>
+    <p class="lede">The page you were looking for has moved or never existed.</p>
+    <a href="/" class="btn btn--primary">Back to the start</a>
+  </section>
+</Base>
+
+<style>
+  .nf { min-height: 80svh; display: flex; flex-direction: column; justify-content: center; gap: 28px; padding-top: 140px; padding-bottom: 80px; }
+  .nf .btn { align-self: flex-start; }
+</style>

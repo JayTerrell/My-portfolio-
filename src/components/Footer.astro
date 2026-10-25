@@ -1,0 +1,105 @@
+---
+import { nav, site } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer" id="contact">
+  <div class="container">
+    <div class="footer__cta" data-reveal>
+      <span class="eyebrow">Contact</span>
+      <h2 class="display footer__title">Let’s connect<br />the <em>dots.</em></h2>
+      <p class="lede">
+        Advisory work, speaking, collaborations, or a problem nobody has been able to untangle. Tell me about the system.
+      </p>
+      <div class="footer__buttons">
+        <a class="btn btn--primary" href={`mailto:${site.email}`}>Email {site.email}</a>
+        <a class="btn" href="/products">Browse products</a>
+      </div>
+    </div>
+
+    <div class="footer__grid">
+      <div>
+        <p class="footer__label">Navigate</p>
+        <ul>
+          <li><a href="/">Home</a></li>
+          {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+        </ul>
+      </div>
+      <div>
+        <p class="footer__label">Elsewhere</p>
+        <ul>
+          {site.social.map((s) => <li><a href={s.href} target="_blank" rel="noopener noreferrer">{s.label}</a></li>)}
+        </ul>
+      </div>
+      <div>
+        <p class="footer__label">Legal</p>
+        <ul>
+          <li><a href="/terms">Terms of Service</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="footer__sign">
+        <p class="display footer__tagline">My brain is <em>my brand.</em></p>
+      </div>
+    </div>
+
+    <div class="footer__base">
+      <span>&copy; {year} {site.legalEntity}. All rights reserved.</span>
+      <span>{site.location}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    border-top: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--ink-950) 0%, #050b16 100%);
+    padding-top: var(--section);
+    padding-bottom: 40px;
+  }
+  .footer__title { font-size: var(--fs-3xl); margin: 28px 0 32px; }
+  .footer__buttons { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 40px; }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.4fr);
+    gap: 40px;
+    margin-top: clamp(80px, 10vw, 140px);
+    padding-top: 40px;
+    border-top: 1px solid var(--line);
+  }
+  .footer__label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 18px;
+  }
+  .footer li + li { margin-top: 8px; }
+  .footer li a { color: var(--text-muted); font-size: var(--fs-sm); }
+  .footer li a:hover { color: var(--text-strong); }
+  .footer__sign { display: flex; align-items: flex-end; justify-content: flex-end; }
+  .footer__tagline { font-size: var(--fs-xl); text-align: right; }
+  .footer__base {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 64px;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  @media (max-width: 860px) {
+    .footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .footer__sign { grid-column: 1 / -1; justify-content: flex-start; }
+    .footer__tagline { text-align: left; }
+  }
+  @media (max-width: 520px) {
+    .footer__buttons .btn { width: 100%; }
+    .footer__buttons .btn--primary { white-space: normal; text-align: center; }
+  }
+</style>

@@ -1,0 +1,71 @@
+---
+import type { Book } from '../data/books';
+interface Props { book: Book }
+const { book } = Astro.props;
+// Every cover stays inside the blue family. Tone varies by category, never hue.
+const tones: Record<string, [string, string, string]> = {
+  Philosophy: ['#13284a', '#0b1a33', '#c8d6f4'],
+  Mathematics: ['#e8e5dd', '#d9d5cb', '#0a1526'],
+  Behavior: ['#2f5bc6', '#23479f', '#f2efe8'],
+  Business: ['#0d1a2f', '#060d19', '#9cb6ee'],
+  Finance: ['#c8d6f4', '#9cb6ee', '#0a1526'],
+  Data: ['#1a2d4a', '#122239', '#e8e5dd'],
+};
+const [c1, c2, ink] = tones[book.category] ?? tones.Philosophy;
+---
+
+<div class="cover skeleton" data-media style={`--c1:${c1}; --c2:${c2}; --ink:${ink}`}>
+  {book.cover ? (
+    <img src={book.cover} alt={`Cover of ${book.title}`} loading="lazy" decoding="async" data-media-img />
+  ) : (
+    <div class="cover__type" aria-hidden="true">
+      <span class="cover__cat">{book.category}</span>
+      <span class="cover__title">{book.title}</span>
+      <span class="cover__author">{book.author}</span>
+    </div>
+  )}
+</div>
+
+<style>
+  .cover { position: relative; aspect-ratio: 2 / 3; border: 1px solid var(--line); }
+  .cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.6s var(--ease-out); }
+  .cover.is-loaded img { opacity: 1; }
+  .cover__type {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 9% 10%;
+    color: var(--ink);
+    background: linear-gradient(165deg, var(--c1) 0%, var(--c2) 100%);
+  }
+  .cover__cat {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    padding-bottom: 10px;
+    border-bottom: 1px solid currentColor;
+  }
+  .cover__title {
+    margin-top: auto;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.1rem, 0.8rem + 0.9vw, 1.55rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .cover__author { margin-top: 12px; font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.06em; opacity: 0.75; }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('.cover[data-media]').forEach((el) => {
+      const img = el.querySelector<HTMLImageElement>('[data-media-img]');
+      if (!img) { el.classList.add('is-loaded'); return; }
+      const done = () => el.classList.add('is-loaded');
+      img.complete && img.naturalWidth ? done() : img.addEventListener('load', done, { once: true });
+    });
+  });
+</script>

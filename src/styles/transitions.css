@@ -1,0 +1,44 @@
+/* Page transitions: the old page dims and lifts away, the new page settles in. */
+@keyframes pageOut {
+  to { opacity: 0; transform: translateY(-10px); filter: blur(2px); }
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(14px); }
+}
+
+.nav-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  z-index: 200;
+  background: linear-gradient(90deg, var(--blue-600), var(--blue-300));
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+  pointer-events: none;
+}
+body.is-navigating .nav-progress {
+  opacity: 1;
+  transform: scaleX(0.7);
+  transition: transform 1.2s var(--ease-out), opacity 0.2s;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 300;
+  padding: 10px 14px;
+  background: var(--ivory-50);
+  color: var(--ink-900);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

@@ -1,0 +1,169 @@
+---
+import { nav, site } from '../data/site';
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+---
+
+<header class="nav" data-nav>
+  <div class="nav__bar container">
+    <a href="/" class="nav__brand" aria-label={`${site.name}, home`}>
+      <span class="nav__mark" aria-hidden="true">{site.initials}</span>
+      <span class="nav__name">{site.name}</span>
+    </a>
+
+    <nav class="nav__links" aria-label="Primary">
+      {nav.map((item) => (
+        <a href={item.href} class:list={['nav__link', { 'is-active': isActive(item.href) }]} aria-current={isActive(item.href) ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="nav__actions">
+      <a href="/#contact" class="btn btn--sm nav__cta">Contact</a>
+      <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-nav-toggle>
+        <span class="sr-only">Menu</span>
+        <span class="nav__toggle-line"></span>
+        <span class="nav__toggle-line"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="nav__sheet" id="mobile-menu" data-nav-sheet hidden>
+    <div class="container">
+      <ol class="nav__sheet-list">
+        {nav.map((item, i) => (
+          <li>
+            <a href={item.href} class:list={{ 'is-active': isActive(item.href) }}>
+              <span class="index-num">{String(i + 1).padStart(2, '0')}</span>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ol>
+      <a href="/#contact" class="btn btn--primary nav__sheet-cta">Start a conversation</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 100;
+    transition: background-color 0.5s var(--ease-out), border-color 0.5s var(--ease-out);
+    border-bottom: 1px solid transparent;
+  }
+  .nav.is-scrolled,
+  .nav.is-open {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+    border-bottom-color: var(--glass-border);
+  }
+  .nav__bar {
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .nav__brand { display: inline-flex; align-items: center; gap: 14px; }
+  .nav__mark {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--line-strong);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--accent-soft);
+  }
+  .nav__name {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-strong);
+  }
+  .nav__links { display: flex; gap: 30px; }
+  .nav__link {
+    position: relative;
+    font-size: var(--fs-sm);
+    color: var(--text-muted);
+    padding: 6px 0;
+  }
+  .nav__link:hover { color: var(--text-strong); }
+  .nav__link.is-active { color: var(--text-strong); }
+  .nav__link.is-active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--accent);
+  }
+  .nav__actions { display: flex; align-items: center; gap: 12px; }
+  .nav__toggle { display: none; width: 44px; height: 44px; position: relative; border: 1px solid var(--line-strong); }
+  .nav__toggle-line {
+    position: absolute;
+    left: 13px;
+    right: 13px;
+    height: 1px;
+    background: var(--text-strong);
+    transition: transform 0.4s var(--ease-inout);
+  }
+  .nav__toggle-line:first-of-type { top: 18px; }
+  .nav__toggle-line:last-of-type { top: 25px; }
+  .nav.is-open .nav__toggle-line:first-of-type { transform: translateY(3.5px) rotate(45deg); }
+  .nav.is-open .nav__toggle-line:last-of-type { transform: translateY(-3.5px) rotate(-45deg); }
+
+  .nav__sheet { height: calc(100dvh - 76px); overflow-y: auto; padding-top: 24px; padding-bottom: 40px; }
+  .nav__sheet-list li { border-top: 1px solid var(--line); }
+  .nav__sheet-list li:last-child { border-bottom: 1px solid var(--line); }
+  .nav__sheet-list a {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    padding: 18px 0;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 2rem;
+    color: var(--text-strong);
+  }
+  .nav__sheet-list a.is-active { color: var(--accent-soft); font-style: italic; }
+  .nav__sheet-cta { margin-top: 32px; width: 100%; }
+
+  @media (max-width: 980px) {
+    .nav__links, .nav__cta { display: none; }
+    .nav__toggle { display: block; }
+    .nav__name { display: none; }
+  }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const navEl = document.querySelector<HTMLElement>('[data-nav]');
+    const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+    const sheet = document.querySelector<HTMLElement>('[data-nav-sheet]');
+    if (!navEl || !toggle || !sheet) return;
+
+    const onScroll = () => navEl.classList.toggle('is-scrolled', window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    const setOpen = (open: boolean) => {
+      navEl.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      sheet.hidden = !open;
+      const lenis = (window as any).lenis;
+      if (lenis) open ? lenis.stop() : lenis.start();
+      document.documentElement.style.overflow = open ? 'hidden' : '';
+    };
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    sheet.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('astro:before-swap', () => setOpen(false), { once: true });
+  });
+</script>

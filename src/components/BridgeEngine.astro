@@ -1,0 +1,187 @@
+---
+import { disciplines, bridges, bridgeKey } from '../data/disciplines';
+interface Props { initialA?: string; initialB?: string }
+const { initialA = 'philosophy', initialB = 'finance' } = Astro.props;
+const first = bridges[bridgeKey(initialA, initialB)];
+const nameOf = (id: string) => disciplines.find((d) => d.id === id)?.name ?? id;
+---
+
+<div class="bridge" data-bridge data-bridges={JSON.stringify(bridges)} data-names={JSON.stringify(Object.fromEntries(disciplines.map((d) => [d.id, d.name])))}>
+  <div class="bridge__pickers">
+    {['a', 'b'].map((side) => (
+      <fieldset class="bridge__picker">
+        <legend class="bridge__legend"><span class="index-num">{side === 'a' ? 'Field A' : 'Field B'}</span></legend>
+        <div class="bridge__chips" role="radiogroup" aria-label={side === 'a' ? 'First discipline' : 'Second discipline'}>
+          {disciplines.map((d) => {
+            const selected = side === 'a' ? d.id === initialA : d.id === initialB;
+            const blocked = side === 'a' ? d.id === initialB : d.id === initialA;
+            return (
+              <button
+                type="button"
+                class="chip"
+                role="radio"
+                aria-checked={selected ? 'true' : 'false'}
+                aria-disabled={blocked ? 'true' : 'false'}
+                data-side={side}
+                data-id={d.id}
+              >
+                {d.name}
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
+    ))}
+    <button type="button" class="btn btn--sm bridge__shuffle" data-shuffle>Surprise me</button>
+  </div>
+
+  <div class="bridge__out glass" aria-live="polite">
+    <div class="bridge__diagram" aria-hidden="true">
+      <span data-name-a>{nameOf(initialA)}</span>
+      <span class="bridge__line"><i></i></span>
+      <span data-name-b>{nameOf(initialB)}</span>
+    </div>
+    <div class="bridge__text" data-text>
+      <p class="bridge__kicker mono">The bridge</p>
+      <h3 class="display bridge__title" data-title>{first.title}</h3>
+      <p class="bridge__insight" data-insight>{first.insight}</p>
+      <p class="bridge__applied"><span class="mono">Applied</span><span data-applied>{first.applied}</span></p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bridge {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: stretch;
+  }
+  .bridge__pickers { display: flex; flex-direction: column; gap: 32px; align-items: flex-start; }
+  .bridge__picker { border: 0; min-width: 0; width: 100%; }
+  .bridge__legend { margin-bottom: 14px; }
+  .bridge__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid var(--line-strong);
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    transition: color 0.3s var(--ease-out), border-color 0.3s var(--ease-out), background-color 0.3s var(--ease-out), transform 0.15s var(--ease-out);
+  }
+  .chip:hover { color: var(--text-strong); border-color: var(--blue-300); }
+  .chip:active { transform: translateY(1px) scale(0.98); }
+  .chip[aria-checked='true'] {
+    color: var(--ivory-50);
+    border-color: var(--blue-500);
+    background: linear-gradient(180deg, rgba(61, 109, 220, 0.35), rgba(47, 91, 198, 0.25));
+  }
+  .chip[aria-disabled='true'] { opacity: 0.3; pointer-events: none; }
+
+  .bridge__out {
+    position: relative;
+    padding: clamp(28px, 4vw, 56px);
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    background:
+      linear-gradient(160deg, rgba(61, 109, 220, 0.12) 0%, rgba(10, 21, 38, 0.4) 55%),
+      var(--glass-bg);
+  }
+  .bridge__diagram {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-strong);
+  }
+  .bridge__line { position: relative; height: 1px; background: linear-gradient(90deg, var(--blue-500), var(--blue-200)); }
+  .bridge__line i {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--blue-200);
+    background: var(--ink-900);
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  .bridge__text { transition: opacity 0.35s var(--ease-out), transform 0.5s var(--ease-out); }
+  .bridge__text.is-swapping { opacity: 0; transform: translateY(6px); }
+  .bridge__kicker { font-size: var(--fs-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+  .bridge__title { font-size: var(--fs-2xl); margin: 16px 0 22px; }
+  .bridge__insight { font-size: var(--fs-md); color: var(--text); max-width: 46ch; }
+  .bridge__applied {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 16px;
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+  }
+  .bridge__applied .mono { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); padding-top: 2px; }
+
+  @media (max-width: 900px) {
+    .bridge { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('[data-bridge]').forEach((root) => {
+      const data = JSON.parse(root.dataset.bridges || '{}');
+      const names = JSON.parse(root.dataset.names || '{}');
+      const ids = Object.keys(names);
+      const state = {
+        a: root.querySelector<HTMLElement>('.chip[data-side="a"][aria-checked="true"]')?.dataset.id ?? ids[0],
+        b: root.querySelector<HTMLElement>('.chip[data-side="b"][aria-checked="true"]')?.dataset.id ?? ids[1],
+      };
+      const text = root.querySelector<HTMLElement>('[data-text]')!;
+      const set = (sel: string, value: string) => { const el = root.querySelector(sel); if (el) el.textContent = value; };
+
+      const render = () => {
+        root.querySelectorAll<HTMLElement>('.chip').forEach((chip) => {
+          const side = chip.dataset.side as 'a' | 'b';
+          const other = side === 'a' ? state.b : state.a;
+          chip.setAttribute('aria-checked', String(chip.dataset.id === state[side]));
+          chip.setAttribute('aria-disabled', String(chip.dataset.id === other));
+        });
+        const key = [state.a, state.b].sort().join('+');
+        const bridge = data[key];
+        text.classList.add('is-swapping');
+        window.setTimeout(() => {
+          set('[data-name-a]', names[state.a]);
+          set('[data-name-b]', names[state.b]);
+          if (bridge) {
+            set('[data-title]', bridge.title);
+            set('[data-insight]', bridge.insight);
+            set('[data-applied]', bridge.applied);
+          }
+          text.classList.remove('is-swapping');
+        }, 220);
+      };
+
+      root.querySelectorAll<HTMLButtonElement>('.chip').forEach((chip) =>
+        chip.addEventListener('click', () => {
+          const side = chip.dataset.side as 'a' | 'b';
+          if (chip.dataset.id === state[side]) return;
+          state[side] = chip.dataset.id!;
+          render();
+        })
+      );
+      root.querySelector('[data-shuffle]')?.addEventListener('click', () => {
+        const a = ids[Math.floor(Math.random() * ids.length)];
+        let b = ids[Math.floor(Math.random() * ids.length)];
+        while (b === a) b = ids[Math.floor(Math.random() * ids.length)];
+        state.a = a; state.b = b;
+        render();
+      });
+    });
+  });
+</script>

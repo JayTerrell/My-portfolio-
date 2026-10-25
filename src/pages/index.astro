@@ -1,0 +1,361 @@
+---
+import Base from '../layouts/Base.astro';
+import HeroNetwork from '../components/HeroNetwork.astro';
+import BridgeEngine from '../components/BridgeEngine.astro';
+import { site } from '../data/site';
+import { disciplines } from '../data/disciplines';
+import { roles } from '../data/experience';
+import { platforms } from '../data/platforms';
+import { books } from '../data/books';
+
+const method = [
+  { n: '01', title: 'Observe', body: 'Map the system as it actually runs, including the parts nobody wrote down. Workarounds are data.' },
+  { n: '02', title: 'Model', body: 'Reduce it to flows, feedback loops, and incentives. Find the constraint that sets the pace for everything else.' },
+  { n: '03', title: 'Connect', body: 'Borrow a solution from a field that already solved the same shape of problem. This is where the unexpected answers live.' },
+  { n: '04', title: 'Optimize', body: 'Move the smallest lever with the largest effect, then measure honestly and let the evidence decide the next move.' },
+];
+
+const explore = [
+  { href: '/experience', label: 'Experience', note: 'Corporate roles and the systems I was trusted to improve.' },
+  { href: '/platforms', label: 'Platforms', note: 'Products and tools I designed and built, with demos.' },
+  { href: '/research', label: 'Research', note: 'Data studies, charts, and what the numbers actually say.' },
+  { href: '/papers', label: 'Papers', note: 'Long form thinking across philosophy, finance, and behavior.' },
+  { href: '/library', label: 'Library', note: 'The books that shaped how I think, and the idea I kept from each.' },
+  { href: '/products', label: 'Products', note: 'Courses, playbooks, and toolkits on business and AI.' },
+];
+---
+
+<Base>
+  <!-- Hero -->
+  <section class="hero">
+    <HeroNetwork />
+    <div class="hero__veil" aria-hidden="true"></div>
+    <div class="container hero__inner">
+      <span class="eyebrow" data-reveal>{site.name} &middot; {site.role}</span>
+      <h1 class="display hero__title" data-reveal style="--reveal-delay: 0.1s">
+        My brain<br />is my <em>brand.</em>
+      </h1>
+      <div class="hero__foot">
+        <p class="lede" data-reveal style="--reveal-delay: 0.2s">
+          I work where <strong>creativity meets data.</strong> Philosophy, mathematics, human behavior, business, and finance are
+          the lenses I use to see how systems really behave, find the leverage hidden inside them, and connect the dots other
+          people walk past.
+        </p>
+        <div class="hero__actions" data-reveal style="--reveal-delay: 0.3s">
+          <a href="/experience" class="btn btn--primary">Explore the work</a>
+          <a href="#method" class="btn">How I think</a>
+        </div>
+      </div>
+    </div>
+    <div class="container hero__ticker" aria-hidden="true">
+      <span>Systems thinker</span><span>Problem solver</span><span>Process optimizer</span><span>Pattern finder</span>
+    </div>
+  </section>
+
+  <!-- The intersection -->
+  <section class="section intersect">
+    <div class="container intersect__grid">
+      <div class="intersect__intro">
+        <span class="eyebrow" data-reveal>The intersection</span>
+        <h2 class="display h2" data-reveal>Seven disciplines.<br /><em>One way</em> of seeing.</h2>
+        <p class="lede" data-reveal>
+          Most people go deep in one field. I go deep in several, then study the space between them. That space is where the
+          non obvious answers tend to hide.
+        </p>
+      </div>
+      <ol class="intersect__list">
+        {disciplines.map((d, i) => (
+          <li data-reveal style={`--reveal-delay: ${i * 0.05}s`}>
+            <span class="index-num">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="display">{d.name}</h3>
+            <p>{d.line}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Bridge engine: a live demo of cross discipline thinking -->
+  <section class="section engine" id="bridge">
+    <div class="container">
+      <div class="engine__head">
+        <div>
+          <span class="eyebrow" data-reveal>Live demo &middot; Bridge Engine</span>
+          <h2 class="display h2" data-reveal>Pick any two fields.<br />Watch them <em>connect.</em></h2>
+        </div>
+        <p class="lede" data-reveal>
+          My favorite problems sit between subjects that seem unrelated. Choose a pair and see the bridge I would build
+          between them, plus where it applies in real work.
+        </p>
+      </div>
+      <div data-reveal><BridgeEngine /></div>
+    </div>
+  </section>
+
+  <!-- Statement band -->
+  <section class="statement">
+    <div class="container">
+      <p class="statement__kicker mono" data-reveal>Operating belief</p>
+      <blockquote class="display statement__quote" data-reveal>
+        Most hard problems are connection problems. The answer usually lives in a field nobody in the room has studied.
+      </blockquote>
+      <p class="statement__sign mono" data-reveal>{site.name}</p>
+    </div>
+  </section>
+
+  <!-- Method -->
+  <section class="section method" id="method">
+    <div class="container method__grid">
+      <div class="method__intro">
+        <span class="eyebrow" data-reveal>How I think</span>
+        <h2 class="display h2" data-reveal>A method for<br /><em>messy</em> systems.</h2>
+        <p class="lede" data-reveal>The same four moves, whether the system is a sales team, a supply chain, a portfolio, or a habit.</p>
+      </div>
+      <ol class="method__steps">
+        {method.map((m) => (
+          <li data-reveal>
+            <span class="method__n display">{m.n}</span>
+            <div>
+              <h3 class="display">{m.title}</h3>
+              <p>{m.body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Selected work -->
+  <section class="section work">
+    <div class="container">
+      <div class="work__head">
+        <span class="eyebrow" data-reveal>Selected work</span>
+        <a href="/experience" class="text-link" data-reveal>Full experience</a>
+      </div>
+      <ul class="work__list">
+        {roles.slice(0, 2).map((r) => (
+          <li data-reveal>
+            <a href="/experience" class="work__row">
+              <span class="mono work__meta">{r.period}</span>
+              <span class="display work__title">{r.title}, {r.org}</span>
+              <span class="mono work__kind">Corporate</span>
+            </a>
+          </li>
+        ))}
+        {platforms.map((p) => (
+          <li data-reveal>
+            <a href="/platforms" class="work__row">
+              <span class="mono work__meta">{p.year}</span>
+              <span class="display work__title">{p.name}</span>
+              <span class="mono work__kind">{p.kind}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Explore -->
+  <section class="section explore">
+    <div class="container">
+      <span class="eyebrow" data-reveal>Explore</span>
+      <h2 class="display h2 explore__title" data-reveal>Everything I build,<br />read, and <em>research.</em></h2>
+      <ol class="explore__list">
+        {explore.map((e, i) => (
+          <li data-reveal>
+            <a href={e.href}>
+              <span class="index-num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="display explore__label">{e.label}</span>
+              <span class="explore__note">{e.note}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+
+      <div class="reading" data-reveal>
+        <span class="mono reading__label">On the shelf</span>
+        <p class="reading__books">
+          {books.slice(0, 5).map((b) => <span><i>{b.title}</i> {b.author}</span>)}
+        </p>
+        <a href="/library" class="text-link">The full library</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-top: 120px;
+    padding-bottom: 40px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #0b1830 0%, var(--ink-900) 60%, var(--ink-900) 100%);
+    border-bottom: 1px solid var(--line);
+  }
+  .hero :global(.network) { left: 44%; top: 90px; bottom: 110px; }
+  .hero__veil {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(10, 21, 38, 0.9) 0%, rgba(10, 21, 38, 0.6) 36%, rgba(10, 21, 38, 0) 52%);
+    pointer-events: none;
+  }
+  .hero__inner { position: relative; z-index: 1; }
+  .hero__title { font-size: var(--fs-hero); margin: 28px 0 48px; line-height: 0.92; }
+  .hero__foot { display: flex; flex-direction: column; align-items: flex-start; gap: 40px; max-width: 560px; }
+  .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .hero__ticker {
+    position: relative;
+    z-index: 1;
+    margin-top: clamp(56px, 8vw, 96px);
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  @media (max-width: 860px) {
+    .hero { min-height: 0; padding-top: calc(min(40svh, 340px) + 90px); }
+    .hero :global(.network) { left: 0; top: 80px; bottom: auto; height: min(40svh, 340px); opacity: 0.8; }
+    .hero__veil { background: linear-gradient(180deg, rgba(10, 21, 38, 0.2) 0%, var(--ink-900) 75%); }
+    .hero__actions { width: 100%; }
+    .hero__actions .btn { flex: 1; }
+  }
+
+  /* Intersection */
+  .intersect__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(40px, 6vw, 120px); }
+  .intersect__intro { position: sticky; top: 120px; align-self: start; }
+  .intersect__intro .h2 { margin: 24px 0 28px; }
+  .intersect__list li {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) minmax(0, 1.3fr);
+    gap: 24px;
+    align-items: baseline;
+    padding: 28px 0;
+    border-top: 1px solid var(--line);
+  }
+  .intersect__list li:last-child { border-bottom: 1px solid var(--line); }
+  .intersect__list h3 { font-size: var(--fs-lg); font-weight: 400; }
+  .intersect__list p { color: var(--text-muted); font-size: var(--fs-sm); }
+  @media (max-width: 900px) {
+    .intersect__grid { grid-template-columns: 1fr; }
+    .intersect__intro { position: static; }
+    .intersect__list li { grid-template-columns: 40px 1fr; }
+    .intersect__list p { grid-column: 2; }
+  }
+
+  /* Engine */
+  .engine {
+    background: linear-gradient(180deg, var(--ink-900) 0%, #0c1b33 50%, var(--ink-900) 100%);
+    border-block: 1px solid var(--line);
+  }
+  .engine__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 40px;
+    align-items: end;
+    margin-bottom: clamp(48px, 6vw, 88px);
+  }
+  .engine__head .h2 { margin-top: 24px; }
+  @media (max-width: 900px) { .engine__head { grid-template-columns: 1fr; } }
+
+  /* Statement */
+  .statement {
+    background: linear-gradient(180deg, var(--ivory-50) 0%, #e9e5dc 100%);
+    color: var(--ink-900);
+    padding-block: clamp(96px, 13vw, 200px);
+  }
+  .statement__kicker, .statement__sign {
+    font-size: var(--fs-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue-700);
+  }
+  .statement__quote {
+    color: var(--ink-900);
+    font-size: clamp(2rem, 1.2rem + 3.4vw, 4.6rem);
+    line-height: 1.06;
+    margin: 32px 0 40px;
+    max-width: 22ch;
+  }
+  .statement__sign { color: #5b6476; }
+
+  /* Method */
+  .method__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(40px, 6vw, 120px); }
+  .method__intro { position: sticky; top: 120px; align-self: start; }
+  .method__intro .h2 { margin: 24px 0 28px; }
+  .method__steps li {
+    display: grid;
+    grid-template-columns: clamp(72px, 9vw, 130px) 1fr;
+    gap: 24px;
+    padding: 40px 0;
+    border-top: 1px solid var(--line);
+  }
+  .method__steps li:last-child { border-bottom: 1px solid var(--line); }
+  .method__n { font-size: clamp(2.4rem, 1.5rem + 3vw, 4.4rem); color: var(--blue-400); font-style: italic; line-height: 1; }
+  .method__steps h3 { font-size: var(--fs-xl); font-weight: 400; margin-bottom: 12px; }
+  .method__steps p { color: var(--text-muted); max-width: 48ch; }
+  @media (max-width: 900px) {
+    .method__grid { grid-template-columns: 1fr; }
+    .method__intro { position: static; }
+  }
+
+  /* Work */
+  .work { border-top: 1px solid var(--line); }
+  .work__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+  .work__row {
+    display: grid;
+    grid-template-columns: 160px 1fr auto;
+    gap: 24px;
+    align-items: baseline;
+    padding: 30px 0;
+    border-top: 1px solid var(--line);
+  }
+  .work__list li:last-child .work__row { border-bottom: 1px solid var(--line); }
+  .work__meta, .work__kind { font-size: var(--fs-xs); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); }
+  .work__title { font-size: var(--fs-xl); font-weight: 300; }
+  .work__row:hover .work__title { color: var(--accent-soft); }
+  @media (max-width: 700px) {
+    .work__row { grid-template-columns: 1fr; gap: 8px; }
+  }
+
+  /* Explore */
+  .explore { border-top: 1px solid var(--line); }
+  .explore__title { margin: 24px 0 64px; }
+  .explore__list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(32px, 5vw, 80px); }
+  .explore__list a {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 6px 16px;
+    padding: 28px 0;
+    border-top: 1px solid var(--line);
+  }
+  .explore__label { font-size: var(--fs-xl); font-weight: 300; }
+  .explore__note { grid-column: 2; color: var(--text-muted); font-size: var(--fs-sm); }
+  .explore__list a:hover .explore__label { color: var(--accent-soft); }
+  @media (max-width: 760px) { .explore__list { grid-template-columns: 1fr; } }
+
+  .reading {
+    margin-top: clamp(64px, 8vw, 120px);
+    padding: 28px 0;
+    border-block: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 160px 1fr auto;
+    gap: 24px;
+    align-items: baseline;
+  }
+  .reading__label { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
+  .reading__books { color: var(--text-faint); font-size: var(--fs-sm); display: flex; flex-wrap: wrap; gap: 6px 28px; }
+  .reading__books i { font-family: var(--font-display); font-size: var(--fs-md); color: var(--text); margin-right: 6px; }
+  @media (max-width: 760px) { .reading { grid-template-columns: 1fr; } }
+</style>

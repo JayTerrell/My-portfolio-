@@ -1,0 +1,15 @@
+---
+interface Props { eyebrow: string; meta?: { label: string; value: string }[] }
+const { eyebrow, meta = [] } = Astro.props;
+---
+
+<header class="page-head container">
+  <span class="eyebrow" data-reveal>{eyebrow}</span>
+  <h1 class="display h1" data-reveal style="--reveal-delay: 0.08s"><slot name="title" /></h1>
+  <p class="lede" data-reveal style="--reveal-delay: 0.16s"><slot name="lede" /></p>
+  {meta.length > 0 && (
+    <div class="page-head__meta" data-reveal style="--reveal-delay: 0.24s">
+      {meta.map((m) => <span>{m.label}<b>{m.value}</b></span>)}
+    </div>
+  )}
+</header>

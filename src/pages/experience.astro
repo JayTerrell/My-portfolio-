@@ -1,0 +1,93 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { roles, toolkit } from '../data/experience';
+---
+
+<Base title="Experience" description="Corporate experience: the systems I was trusted to improve, and what changed.">
+  <PageHead eyebrow="Corporate experience" meta={[{ label: 'Roles', value: String(roles.length) }, { label: 'Focus', value: 'Systems, data, strategy' }]}>
+    <Fragment slot="title">Systems I was <em>trusted</em> to improve.</Fragment>
+    <Fragment slot="lede">Every role has been a version of the same job: understand how the machine really works, find the constraint, and make the whole thing run better.</Fragment>
+  </PageHead>
+
+  <section class="container roles">
+    {roles.map((r, i) => (
+      <article class="role" data-reveal>
+        <div class="role__side">
+          <span class="index-num">{String(i + 1).padStart(2, '0')}</span>
+          <p class="mono role__period">{r.period}</p>
+          <p class="mono role__sector">{r.sector}</p>
+        </div>
+        <div class="role__main">
+          <h2 class="display role__title">{r.title}</h2>
+          <p class="role__org">{r.org}</p>
+          <p class="role__summary">{r.summary}</p>
+          <dl class="role__system">
+            <dt class="mono">The system</dt>
+            <dd>{r.system}</dd>
+          </dl>
+          <ul class="role__outcomes">
+            {r.outcomes.map((o) => (
+              <li>
+                <span class="display role__figure">{o.figure}</span>
+                <span class="role__label">{o.label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </article>
+    ))}
+  </section>
+
+  <section class="section container toolkit">
+    <span class="eyebrow" data-reveal>Toolkit</span>
+    <h2 class="display h2" data-reveal>The instruments<br />I reach for <em>first.</em></h2>
+    <div class="toolkit__grid">
+      {toolkit.map((t) => (
+        <div data-reveal>
+          <p class="mono toolkit__group">{t.group}</p>
+          <ul>{t.items.map((item) => <li>{item}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .roles { border-top: 1px solid var(--line); }
+  .role {
+    display: grid;
+    grid-template-columns: minmax(160px, 3fr) minmax(0, 9fr);
+    gap: clamp(24px, 5vw, 96px);
+    padding: clamp(48px, 6vw, 88px) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .role__side { display: flex; flex-direction: column; gap: 10px; }
+  .role__period { color: var(--text); font-size: var(--fs-sm); }
+  .role__sector { color: var(--text-faint); font-size: var(--fs-xs); letter-spacing: 0.1em; text-transform: uppercase; }
+  .role__title { font-size: var(--fs-2xl); }
+  .role__org { margin-top: 12px; color: var(--accent-soft); font-family: var(--font-mono); font-size: var(--fs-sm); letter-spacing: 0.06em; }
+  .role__summary { margin-top: 28px; font-size: var(--fs-md); color: var(--text-muted); max-width: 60ch; }
+  .role__system {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    padding: 18px 0;
+    border-block: 1px solid var(--line);
+    font-size: var(--fs-sm);
+  }
+  .role__system dt { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); padding-top: 2px; }
+  .role__system dd { color: var(--text); }
+  .role__outcomes { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 32px clamp(32px, 5vw, 72px); }
+  .role__outcomes li { display: flex; flex-direction: column; gap: 6px; min-width: 140px; }
+  .role__figure { font-size: var(--fs-2xl); color: var(--blue-300); font-style: italic; }
+  .role__label { font-size: var(--fs-sm); color: var(--text-muted); max-width: 22ch; }
+  @media (max-width: 760px) { .role { grid-template-columns: 1fr; } }
+
+  .toolkit .h2 { margin: 24px 0 64px; }
+  .toolkit__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; border-top: 1px solid var(--line); padding-top: 32px; }
+  .toolkit__group { font-size: var(--fs-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  .toolkit__grid li { color: var(--text-muted); padding: 8px 0; border-bottom: 1px solid var(--line); font-size: var(--fs-sm); }
+  @media (max-width: 900px) { .toolkit__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>

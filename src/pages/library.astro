@@ -1,0 +1,94 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import BookCover from '../components/BookCover.astro';
+import { books } from '../data/books';
+const categories = ['All', ...Array.from(new Set(books.map((b) => b.category)))];
+---
+
+<Base title="Library" description="The books that shaped how I think, and the one idea I kept from each.">
+  <PageHead eyebrow="The library" meta={[{ label: 'Books', value: String(books.length) }, { label: 'Fields', value: String(categories.length - 1) }]}>
+    <Fragment slot="title">The books behind <em>the brain.</em></Fragment>
+    <Fragment slot="lede">A reading list across philosophy, mathematics, behavior, business, finance, and data. For each book, the single idea that stayed with me.</Fragment>
+  </PageHead>
+
+  <section class="container library" data-library>
+    <div class="filters" role="toolbar" aria-label="Filter by field">
+      {categories.map((c, i) => (
+        <button type="button" class="chip" aria-pressed={i === 0 ? 'true' : 'false'} data-filter={c}>{c}</button>
+      ))}
+      <span class="mono filters__count" data-count>{books.length} books</span>
+    </div>
+
+    <ul class="shelf">
+      {books.map((b) => (
+        <li class="book" data-category={b.category} data-reveal>
+          <BookCover book={b} />
+          <div class="book__meta">
+            <h2 class="book__title">{b.title}</h2>
+            <p class="mono book__author">{b.author} &middot; read {b.year}</p>
+            <p class="book__take">{b.takeaway}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 20px 0;
+    border-block: 1px solid var(--line);
+    margin-bottom: 56px;
+  }
+  .filters__count { margin-left: auto; font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
+  .chip {
+    height: 38px;
+    padding: 0 16px;
+    border: 1px solid var(--line-strong);
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    transition: color 0.3s var(--ease-out), border-color 0.3s var(--ease-out), background-color 0.3s var(--ease-out), transform 0.15s var(--ease-out);
+  }
+  .chip:hover { color: var(--text-strong); border-color: var(--blue-300); }
+  .chip:active { transform: translateY(1px) scale(0.98); }
+  .chip[aria-pressed='true'] { color: var(--ivory-50); border-color: var(--blue-500); background: rgba(61, 109, 220, 0.28); }
+
+  .shelf { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 56px 28px; padding-bottom: var(--section); }
+  .book[hidden] { display: none; }
+  .book__meta { margin-top: 18px; }
+  .book__title { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-md); line-height: 1.2; color: var(--text-strong); }
+  .book__author { margin-top: 6px; font-size: 0.6875rem; letter-spacing: 0.06em; color: var(--text-faint); }
+  .book__take { margin-top: 12px; font-size: var(--fs-sm); color: var(--text-muted); line-height: 1.55; }
+  @media (max-width: 1100px) { .shelf { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (max-width: 860px) { .shelf { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 600px) { .shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 16px; } .filters__count { width: 100%; margin: 8px 0 0; } }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const root = document.querySelector<HTMLElement>('[data-library]');
+    if (!root) return;
+    const chips = root.querySelectorAll<HTMLButtonElement>('[data-filter]');
+    const items = root.querySelectorAll<HTMLElement>('.book');
+    const count = root.querySelector('[data-count]');
+    chips.forEach((chip) =>
+      chip.addEventListener('click', () => {
+        const f = chip.dataset.filter;
+        chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+        let n = 0;
+        items.forEach((el) => {
+          const show = f === 'All' || el.dataset.category === f;
+          el.hidden = !show;
+          if (show) { n++; el.classList.add('is-visible'); }
+        });
+        if (count) count.textContent = `${n} ${n === 1 ? 'book' : 'books'}`;
+        (window as any).lenis?.resize();
+      })
+    );
+  });
+</script>

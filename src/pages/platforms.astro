@@ -1,0 +1,71 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import DemoFrame from '../components/DemoFrame.astro';
+import BridgeEngine from '../components/BridgeEngine.astro';
+import { platforms } from '../data/platforms';
+---
+
+<Base title="Platforms" description="Products and platforms I have designed and built, with live demos.">
+  <PageHead eyebrow="Products and platforms" meta={[{ label: 'Built', value: String(platforms.length + 1) }, { label: 'Live demos', value: 'Yes' }]}>
+    <Fragment slot="title">Ideas, turned into <em>working</em> systems.</Fragment>
+    <Fragment slot="lede">Tools and platforms I designed end to end. Each one started as a pattern I noticed and ended as something people use.</Fragment>
+  </PageHead>
+
+  <section class="container">
+    {platforms.map((p, i) => (
+      <article class="platform" data-reveal>
+        <header class="platform__head">
+          <span class="index-num">P.{String(i + 1).padStart(2, '0')}</span>
+          <span class="mono platform__meta">{p.kind} &middot; {p.year}</span>
+        </header>
+        <div class="platform__body">
+          <div class="platform__copy">
+            <h2 class="display platform__name">{p.name}</h2>
+            <p class="platform__one">{p.oneLiner}</p>
+            <dl class="platform__facts">
+              <div><dt class="mono">Problem</dt><dd>{p.problem}</dd></div>
+              <div><dt class="mono">System</dt><dd>{p.system}</dd></div>
+              <div><dt class="mono">Result</dt><dd>{p.result}</dd></div>
+            </dl>
+            <div class="tags">{p.stack.map((s) => <span class="tag">{s}</span>)}</div>
+            {p.link && <a href={p.link} class="btn btn--sm platform__link" target="_blank" rel="noopener noreferrer">Visit {p.name}</a>}
+          </div>
+          <DemoFrame name={p.name} {...p.demo} />
+        </div>
+      </article>
+    ))}
+  </section>
+
+  <section class="section live">
+    <div class="container">
+      <div class="live__head">
+        <span class="index-num">P.{String(platforms.length + 1).padStart(2, '0')}</span>
+        <span class="mono platform__meta">Interactive &middot; 2026</span>
+      </div>
+      <h2 class="display h2 live__title" data-reveal>Bridge Engine, <em>live.</em></h2>
+      <p class="lede live__lede" data-reveal>A working model of how I connect unrelated fields. Twenty one pairings, each with a principle and a real world application.</p>
+      <div data-reveal><BridgeEngine initialA="mathematics" initialB="business" /></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .platform { border-top: 1px solid var(--line); padding: clamp(40px, 5vw, 72px) 0; }
+  .platform__head, .live__head { display: flex; justify-content: space-between; margin-bottom: 32px; }
+  .platform__meta { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
+  .platform__body { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 80px); align-items: start; }
+  .platform__name { font-size: var(--fs-2xl); }
+  .platform__one { margin-top: 18px; font-size: var(--fs-md); color: var(--text-muted); }
+  .platform__facts { margin: 32px 0; }
+  .platform__facts div { display: grid; grid-template-columns: 90px 1fr; gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); font-size: var(--fs-sm); }
+  .platform__facts div:last-child { border-bottom: 1px solid var(--line); }
+  .platform__facts dt { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); padding-top: 2px; }
+  .platform__facts dd { color: var(--text); }
+  .platform__link { margin-top: 28px; }
+  @media (max-width: 900px) { .platform__body { grid-template-columns: 1fr; } }
+
+  .live { border-top: 1px solid var(--line); background: linear-gradient(180deg, var(--ink-900), #0c1b33 60%, var(--ink-900)); }
+  .live__title { margin-bottom: 24px; }
+  .live__lede { margin-bottom: 64px; }
+</style>

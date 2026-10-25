@@ -1,0 +1,110 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+import '../styles/transitions.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = site.description } = Astro.props;
+const fullTitle = title ? `${title} | ${site.name}` : `${site.name} | ${site.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+
+const page = {
+  old: { name: 'pageOut', duration: '0.32s', easing: 'cubic-bezier(0.7, 0, 0.2, 1)', fillMode: 'both' },
+  new: { name: 'pageIn', duration: '0.7s', delay: '0.06s', easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fillMode: 'both' },
+};
+const pageTransition = { forwards: page, backwards: page };
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a1526" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <ClientRouter fallback="animate" />
+  </head>
+  <body>
+    <div class="nav-progress" aria-hidden="true"></div>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Nav />
+    <main id="main" transition:animate={pageTransition}>
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      import Lenis from 'lenis';
+      import 'lenis/dist/lenis.css';
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let lenis: Lenis | null = null;
+
+      // Inertia scrolling. Disabled for people who ask the OS for less motion.
+      if (!reduceMotion) {
+        lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.95, anchors: { offset: -80 } });
+        const raf = (time: number) => {
+          lenis?.raf(time);
+          requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+        (window as any).lenis = lenis;
+      }
+
+      // Thin progress line while a page transition is fetching.
+      document.addEventListener('astro:before-preparation', () => document.body.classList.add('is-navigating'));
+      document.addEventListener('astro:after-swap', () => {
+        document.documentElement.classList.add('js');
+        if (lenis) {
+          lenis.scrollTo(0, { immediate: true, force: true });
+          lenis.resize();
+        }
+      });
+
+      // Scroll reveals, re-bound on every page.
+      document.addEventListener('astro:page-load', () => {
+        document.body.classList.remove('is-navigating');
+        const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+        if (!('IntersectionObserver' in window)) {
+          items.forEach((el) => el.classList.add('is-visible'));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+        );
+        items.forEach((el) => io.observe(el));
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { papers } from '../data/papers';
+---
+
+<Base title="Papers" description="Papers and long form essays on systems, philosophy, finance, and human behavior.">
+  <PageHead eyebrow="Papers and essays" meta={[{ label: 'Papers', value: String(papers.length) }, { label: 'Format', value: 'PDF and web' }]}>
+    <Fragment slot="title">Thinking, <em>written</em> down.</Fragment>
+    <Fragment slot="lede">Long form work where the ideas get tested. Each paper borrows from at least two fields to say something neither could say alone.</Fragment>
+  </PageHead>
+
+  <section class="container papers">
+    {papers.map((p) => (
+      <article class="paper" data-reveal>
+        <div class="paper__side">
+          <span class="display paper__year">{p.year}</span>
+          <span class="mono paper__status">{p.status}</span>
+          {p.readingTime && <span class="mono paper__time">{p.readingTime} read</span>}
+        </div>
+        <div class="paper__main">
+          <h2 class="display paper__title">{p.title}</h2>
+          {p.venue && <p class="mono paper__venue">{p.venue}</p>}
+          <p class="paper__abstract">{p.abstract}</p>
+          <div class="paper__foot">
+            <div class="tags">{p.topics.map((t) => <span class="tag">{t}</span>)}</div>
+            {p.pdf
+              ? <a class="btn btn--sm" href={p.pdf} target="_blank" rel="noopener">Read the paper</a>
+              : <span class="btn btn--sm" aria-disabled="true">PDF coming soon</span>}
+          </div>
+        </div>
+      </article>
+    ))}
+  </section>
+</Base>
+
+<style>
+  .papers { border-top: 1px solid var(--line); }
+  .paper {
+    display: grid;
+    grid-template-columns: minmax(140px, 3fr) minmax(0, 9fr);
+    gap: clamp(24px, 5vw, 96px);
+    padding: clamp(40px, 5vw, 72px) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .paper__side { display: flex; flex-direction: column; gap: 8px; }
+  .paper__year { font-size: var(--fs-2xl); font-style: italic; color: var(--blue-300); line-height: 1; margin-bottom: 8px; }
+  .paper__status, .paper__time { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
+  .paper__status { color: var(--text); }
+  .paper__title { font-size: var(--fs-xl); max-width: 26ch; }
+  .paper__venue { margin-top: 10px; font-size: var(--fs-sm); color: var(--accent-soft); }
+  .paper__abstract { margin-top: 24px; color: var(--text-muted); max-width: 64ch; }
+  .paper__foot { margin-top: 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+  @media (max-width: 760px) {
+    .paper { grid-template-columns: 1fr; }
+    .paper__side { flex-direction: row; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  }
+</style>

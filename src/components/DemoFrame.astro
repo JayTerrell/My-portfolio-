@@ -1,0 +1,72 @@
+---
+// Product demo slot. Shows a skeleton until the video or embed has loaded.
+interface Props { name: string; video?: string; poster?: string; embed?: string }
+const { name, video, poster, embed } = Astro.props;
+const empty = !video && !embed;
+---
+
+<figure class="demo" data-media>
+  <div class="demo__chrome mono" aria-hidden="true">
+    <span>Demo</span><span>{name}</span>
+  </div>
+  <div class="demo__stage skeleton">
+    {video && <video src={video} poster={poster} muted loop playsinline autoplay preload="metadata" aria-label={`${name} demo`} data-media-el></video>}
+    {embed && <iframe src={embed} title={`${name} live demo`} loading="lazy" data-media-el></iframe>}
+    {empty && (
+      <div class="demo__empty">
+        <p class="mono">Demo recording</p>
+        <p>Drop a screen recording into <code>public/demos</code> and set <code>demo.video</code> in <code>src/data/platforms.ts</code>.</p>
+      </div>
+    )}
+  </div>
+</figure>
+
+<style>
+  .demo { border: 1px solid var(--line); background: var(--surface); }
+  .demo__chrome {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  .demo__stage { position: relative; aspect-ratio: 16 / 10; }
+  .demo__stage video, .demo__stage iframe {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover;
+    opacity: 0; transition: opacity 0.6s var(--ease-out);
+  }
+  .is-loaded video, .is-loaded iframe { opacity: 1; }
+  .demo__empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 24px;
+    font-size: var(--fs-sm);
+    color: var(--text-faint);
+    max-width: 52ch;
+  }
+  .demo__empty .mono { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+  .demo__empty code { font-family: var(--font-mono); font-size: 0.8em; color: var(--text-muted); }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('[data-media]').forEach((fig) => {
+      const el = fig.querySelector<HTMLVideoElement | HTMLIFrameElement>('[data-media-el]');
+      if (!el) return;
+      const done = () => fig.classList.add('is-loaded');
+      if (el instanceof HTMLVideoElement) {
+        if (el.readyState >= 2) done();
+        else el.addEventListener('loadeddata', done, { once: true });
+      } else {
+        el.addEventListener('load', done, { once: true });
+      }
+    });
+  });
+</script>

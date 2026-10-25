@@ -1,0 +1,115 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { products } from '../data/products';
+import { site } from '../data/site';
+---
+
+<Base title="Products" description="Courses, playbooks, and toolkits that teach business and AI the way I practice them.">
+  <PageHead eyebrow="Knowledge products" meta={[{ label: 'Products', value: String(products.length) }, { label: 'Topics', value: 'Business, AI, decisions' }]}>
+    <Fragment slot="title">The way I think, <em>packaged</em> to use.</Fragment>
+    <Fragment slot="lede">Courses, playbooks, and toolkits built from real work. Practical, specific, and designed to change how you operate on Monday morning.</Fragment>
+  </PageHead>
+
+  <section class="container products">
+    {products.map((p, i) => (
+      <article class="product" id={p.slug} data-reveal>
+        <div class="product__index">
+          <span class="index-num">K.{String(i + 1).padStart(2, '0')}</span>
+          <span class="mono product__format">{p.format}</span>
+        </div>
+        <div class="product__main">
+          <h2 class="display product__title">{p.title}</h2>
+          <p class="product__pitch">{p.pitch}</p>
+          <p class="product__for"><span class="mono">For</span>{p.forWho}</p>
+        </div>
+        <div class="product__inside">
+          <p class="mono product__label">Inside</p>
+          <ol>{p.inside.map((item, j) => <li><span class="mono">{String(j + 1).padStart(2, '0')}</span>{item}</li>)}</ol>
+        </div>
+        <div class="product__buy">
+          <span class="display product__price">{p.price}</span>
+          <span class="mono product__status">{p.status}</span>
+          {p.status === 'Available' && p.href ? (
+            <a class="btn btn--primary" href={p.href}>Get access</a>
+          ) : (
+            <a
+              class="btn"
+              href={site.waitlistEndpoint ? `#waitlist` : `mailto:${site.email}?subject=${encodeURIComponent('Waitlist: ' + p.title)}`}
+              data-product={p.title}
+            >
+              Join the waitlist
+            </a>
+          )}
+        </div>
+      </article>
+    ))}
+  </section>
+
+  {site.waitlistEndpoint && (
+    <section class="section container waitlist" id="waitlist">
+      <span class="eyebrow">Waitlist</span>
+      <h2 class="display h2">Be first through <em>the door.</em></h2>
+      <form class="waitlist__form" action={site.waitlistEndpoint} method="POST">
+        <label class="sr-only" for="wl-email">Email address</label>
+        <input id="wl-email" type="email" name="email" required placeholder="you@company.com" />
+        <button class="btn btn--primary" type="submit">Join the waitlist</button>
+      </form>
+      <p class="waitlist__fine">By joining you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>. Unsubscribe anytime.</p>
+    </section>
+  )}
+
+  <section class="section--tight container guarantee" data-reveal>
+    <p class="mono guarantee__label">Fine print</p>
+    <p>All products are digital. Purchases are covered by the <a href="/terms#purchases">refund terms</a>, and your information is handled as described in the <a href="/privacy">Privacy Policy</a>.</p>
+  </section>
+</Base>
+
+<style>
+  .products { border-top: 1px solid var(--line); }
+  .product {
+    display: grid;
+    grid-template-columns: minmax(120px, 2fr) minmax(0, 5fr) minmax(0, 3.4fr) minmax(160px, 2.2fr);
+    gap: clamp(24px, 3vw, 56px);
+    padding: clamp(40px, 5vw, 72px) 0;
+    border-bottom: 1px solid var(--line);
+    align-items: start;
+  }
+  .product__index { display: flex; flex-direction: column; gap: 10px; }
+  .product__format { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
+  .product__title { font-size: var(--fs-xl); }
+  .product__pitch { margin-top: 18px; color: var(--text-muted); }
+  .product__for { margin-top: 20px; display: grid; grid-template-columns: 48px 1fr; gap: 12px; font-size: var(--fs-sm); color: var(--text); }
+  .product__for .mono { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); padding-top: 2px; }
+  .product__label { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .product__inside li { display: grid; grid-template-columns: 32px 1fr; padding: 9px 0; border-top: 1px solid var(--line); font-size: var(--fs-sm); color: var(--text-muted); }
+  .product__inside li .mono { font-size: var(--fs-xs); color: var(--text-faint); padding-top: 2px; }
+  .product__buy { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .product__price { font-size: var(--fs-2xl); line-height: 1; color: var(--text-strong); }
+  .product__status { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue-300); margin-bottom: 14px; }
+  @media (max-width: 1100px) {
+    .product { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .product__index { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; }
+  }
+  @media (max-width: 700px) {
+    .product { grid-template-columns: 1fr; }
+    .product__buy .btn { width: 100%; }
+  }
+
+  .waitlist .h2 { margin: 24px 0 40px; }
+  .waitlist__form { display: flex; gap: 12px; max-width: 620px; flex-wrap: wrap; }
+  .waitlist__form input {
+    flex: 1 1 260px;
+    min-height: 48px;
+    padding: 0 16px;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    color: var(--text-strong);
+  }
+  .waitlist__form input:focus { outline: 1px solid var(--blue-400); border-color: var(--blue-400); }
+  .waitlist__fine { margin-top: 16px; font-size: var(--fs-xs); color: var(--text-faint); }
+  .waitlist__fine a, .guarantee a { color: var(--accent-soft); text-decoration: underline; text-underline-offset: 3px; }
+  .guarantee { display: grid; grid-template-columns: minmax(120px, 2fr) 10fr; gap: 24px; color: var(--text-muted); font-size: var(--fs-sm); }
+  .guarantee__label { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
+  @media (max-width: 700px) { .guarantee { grid-template-columns: 1fr; } }
+</style>
